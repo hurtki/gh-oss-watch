@@ -7,13 +7,13 @@ import (
 
 // Unit tests for ParseRepoString
 func TestParseRepoString(t *testing.T) {
-	input := []struct{
-		name string
-		input string
+	input := []struct {
+		name           string
+		input          string
 		excpectedOwner string
-		excpectedRepo string
-		HasError bool	
-	} {
+		excpectedRepo  string
+		HasError       bool
+	}{
 		{name: "owner/repo succsess", input: "owner/repo", excpectedOwner: "owner", excpectedRepo: "repo", HasError: false},
 		{name: "link succsess", input: "https://github.com/owner/repo", excpectedOwner: "owner", excpectedRepo: "repo", HasError: false},
 		{name: "link to .git succsess", input: "https://github.com/owner/repo.git", excpectedOwner: "owner", excpectedRepo: "repo", HasError: false},

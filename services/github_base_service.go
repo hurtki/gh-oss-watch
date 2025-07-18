@@ -47,19 +47,6 @@ func (g *GitHubBaseService) RepoExists(ctx context.Context, owner, repo string) 
 	return g.client.CheckRepoExists(ctx, owner, repo)
 }
 
-// ParseRepoString parses a repository string in the format "owner/repo"
-func ParseRepoString1(repoStr string) (owner, repo string, err error) {
-	parts := strings.Split(repoStr, "/")
-	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		return "", "", NewValidationError(
-			fmt.Sprintf("invalid repo format: %s (expected owner/repo)", repoStr),
-			repoStr,
-			nil,
-		)
-	}
-	return parts[0], parts[1], nil
-}
-
 // ParseRepoString retrieves pattern 'owner/repo' from the string
 func ParseRepoString(input string) (string, string, error) {
 	// trimming side unwanted charachters
@@ -71,7 +58,7 @@ func ParseRepoString(input string) (string, string, error) {
 		if err != nil {
 			return "", "", err
 		}
-		trimmed = u.Path 
+		trimmed = u.Path
 	}
 
 	trimmed = strings.Trim(trimmed, "/")
@@ -82,7 +69,7 @@ func ParseRepoString(input string) (string, string, error) {
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
 		return "", "", fmt.Errorf("invalid repo format: %s (expected owner/repo or link)", input)
 	}
-	
+
 	return parts[0], parts[1], nil
 }
 
