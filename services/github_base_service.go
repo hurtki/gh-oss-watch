@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strings"
 )
 
@@ -47,7 +48,7 @@ func (g *GitHubBaseService) RepoExists(ctx context.Context, owner, repo string) 
 }
 
 // ParseRepoString parses a repository string in the format "owner/repo"
-func ParseRepoString(repoStr string) (owner, repo string, err error) {
+func ParseRepoString1(repoStr string) (owner, repo string, err error) {
 	parts := strings.Split(repoStr, "/")
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
 		return "", "", NewValidationError(
@@ -56,6 +57,32 @@ func ParseRepoString(repoStr string) (owner, repo string, err error) {
 			nil,
 		)
 	}
+	return parts[0], parts[1], nil
+}
+
+// ParseRepoString retrieves pattern 'owner/repo' from the string
+func ParseRepoString(input string) (string, string, error) {
+	// trimming side unwanted charachters
+	trimmed := strings.Trim(input, "/ \t\n\r")
+
+	// trying to parse as URL
+	if strings.HasPrefix(trimmed, "http://") || strings.HasPrefix(trimmed, "https://") {
+		u, err := url.Parse(trimmed)
+		if err != nil {
+			return "", "", err
+		}
+		trimmed = u.Path 
+	}
+
+	trimmed = strings.Trim(trimmed, "/")
+	trimmed = strings.TrimSuffix(trimmed, ".git")
+
+	// now it should look like owner/repo
+	parts := strings.Split(trimmed, "/")
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		return "", "", fmt.Errorf("invalid repo format: %s (expected owner/repo or link)", input)
+	}
+	
 	return parts[0], parts[1], nil
 }
 
